@@ -66,7 +66,7 @@ Document text:
 `;
 
 export async function extractMedicalData(text) {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(MEDICAL_EXTRACTION_PROMPT + text);
     const response = await result.response;
     const rawText = response.text().trim();
