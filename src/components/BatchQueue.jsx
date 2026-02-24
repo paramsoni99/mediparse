@@ -1,19 +1,21 @@
 import { motion } from "framer-motion";
+import { Clock, Loader2, CheckCircle2, XCircle, FolderOpen } from "lucide-react";
 
 const statusConfig = {
-    pending: { icon: "⏳", color: "#94a3b8", label: "Pending" },
-    processing: { icon: "🔄", color: "#3b82f6", label: "Processing..." },
-    done: { icon: "✅", color: "#10b981", label: "Done" },
-    error: { icon: "❌", color: "#ef4444", label: "Error" },
+    pending: { Icon: Clock, color: "var(--text-muted)", label: "Pending" },
+    processing: { Icon: Loader2, color: "var(--accent-primary)", label: "Processing...", spin: true },
+    done: { Icon: CheckCircle2, color: "var(--accent-green)", label: "Done" },
+    error: { Icon: XCircle, color: "var(--accent-red)", label: "Error" },
 };
 
 export default function BatchQueue({ queue, onSelectResult, selectedIndex }) {
     return (
-        <div style={{ background: "#111827", borderRadius: "16px", padding: "20px", border: "1px solid #1e293b" }}>
-            <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#94a3b8", marginBottom: "14px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                📂 File Queue ({queue.length})
-            </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div className="glass-card" style={{ padding: "20px" }}>
+            <div className="section-label">
+                <FolderOpen size={13} /> File Queue ({queue.length})
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                 {queue.map((item, i) => {
                     const s = statusConfig[item.status];
                     const isSelected = selectedIndex === i;
@@ -22,23 +24,33 @@ export default function BatchQueue({ queue, onSelectResult, selectedIndex }) {
                             key={i}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05 }}
+                            transition={{ delay: i * 0.04 }}
                             onClick={() => item.status === "done" && onSelectResult(i)}
                             style={{
                                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                                padding: "12px 14px", borderRadius: "10px", cursor: item.status === "done" ? "pointer" : "default",
-                                background: isSelected ? "rgba(59,130,246,0.15)" : "#0a0f1e",
-                                border: `1px solid ${isSelected ? "#3b82f6" : "#1e293b"}`,
-                                transition: "all 0.2s",
+                                padding: "10px 12px", borderRadius: "var(--radius-sm)",
+                                cursor: item.status === "done" ? "pointer" : "default",
+                                background: isSelected ? "rgba(var(--accent-primary-rgb), 0.1)" : "rgba(11, 15, 25, 0.5)",
+                                border: `1px solid ${isSelected ? "rgba(var(--accent-primary-rgb), 0.25)" : "var(--glass-border)"}`,
+                                transition: "all var(--transition-fast)",
                             }}
                         >
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px", overflow: "hidden" }}>
-                                <span style={{ fontSize: "16px" }}>{s.icon}</span>
-                                <span style={{ fontSize: "13px", color: "#f1f5f9", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "200px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
+                                <s.Icon
+                                    size={14}
+                                    color={s.color}
+                                    className={s.spin ? "animate-spin" : ""}
+                                    strokeWidth={2}
+                                />
+                                <span style={{
+                                    fontSize: "12px", color: "var(--text-primary)",
+                                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                                    maxWidth: "180px",
+                                }}>
                                     {item.fileName}
                                 </span>
                             </div>
-                            <span style={{ fontSize: "11px", fontWeight: 600, color: s.color, flexShrink: 0 }}>
+                            <span style={{ fontSize: "10px", fontWeight: 600, color: s.color, flexShrink: 0 }}>
                                 {s.label}
                             </span>
                         </motion.div>
@@ -49,14 +61,14 @@ export default function BatchQueue({ queue, onSelectResult, selectedIndex }) {
             {/* Progress bar */}
             {queue.length > 0 && (
                 <div style={{ marginTop: "16px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#94a3b8", marginBottom: "6px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "var(--text-muted)", marginBottom: "6px" }}>
                         <span>Progress</span>
                         <span>{queue.filter((q) => q.status === "done").length} / {queue.length}</span>
                     </div>
-                    <div style={{ background: "#1e293b", borderRadius: "999px", height: "6px" }}>
+                    <div className="progress-track">
                         <motion.div
+                            className="progress-fill"
                             animate={{ width: `${(queue.filter((q) => q.status === "done").length / queue.length) * 100}%` }}
-                            style={{ background: "linear-gradient(90deg, #3b82f6, #06b6d4)", height: "6px", borderRadius: "999px" }}
                         />
                     </div>
                 </div>
